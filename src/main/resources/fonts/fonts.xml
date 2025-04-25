@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+
+	<fontFamily name="宋体">
+		<normal>fonts/simsun.ttf</normal>
+		<bold>fonts/simsun.ttf</bold>
+		<italic>fonts/simsun.ttf</italic>
+		<boldItalic>fonts/simsun.ttf</boldItalic>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'宋体', Arial, Helvetica, sans-serif</export>
+			<export key="net.sf.jasperreports.xhtml">'宋体', Arial, Helvetica, sans-serif</export>
+		</exportFonts>
+	</fontFamily>
+	<fontFamily name="標楷體">
+		<normal>fonts/kaiu_eudc.ttf</normal>
+		<bold>fonts/kaiu_eudc.ttf</bold>
+		<italic>fonts/kaiu_eudc.ttf</italic>
+		<boldItalic>fonts/kaiu_eudc.ttf</boldItalic>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+		<exportFonts>
+			<export key="net.sf.jasperreports.html">'kaiu_eudc', Arial, Helvetica, sans-serif</export>
+			<export key="net.sf.jasperreports.xhtml">'kaiu_eudc', Arial, Helvetica, sans-serif</export>
+		</exportFonts>
+	</fontFamily>
+</fontFamilies>
