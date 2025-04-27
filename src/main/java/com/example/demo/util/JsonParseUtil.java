@@ -11,9 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+/**
+ * Json Parse 工具類
+ */
+@Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonParseUtil {

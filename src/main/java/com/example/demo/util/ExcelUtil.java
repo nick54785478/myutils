@@ -2,8 +2,6 @@ package com.example.demo.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -29,76 +27,30 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.model.employee.Employee;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+/**
+ * Excel 工具類
+ */
+@Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExcelUtil {
 
 	/**
-	 * 參考
-	 */
-	public void exportExcel(List<String> headers, List<Employee> content) {
-
-		try {
-			// 宣告XSSFWorkbook
-			Workbook wb = new XSSFWorkbook();
-			// 建立分頁
-			Sheet sheet = wb.createSheet("工作表");
-			Row row = null; // 宣告列物件
-			Cell cell = null; // 宣告表格物件
-
-			// 宣告標題列 物件
-			row = sheet.createRow(0); // 第一列
-
-			// 標題處理
-			for (int i = 0; i < headers.size(); i++) {
-				// 宣告表格物件
-				cell = row.createCell(i); // 第i行
-				cell.setCellValue(headers.get(i));
-			}
-
-			// 內容處理
-			for (int i = 0; i < content.size(); i++) {
-				row = sheet.createRow(i + 1); // 第i+1列
-				cell = row.createCell(0);
-				cell.setCellValue(content.get(i).getName());
-				cell = row.createCell(1);
-				cell.setCellValue(content.get(i).getId());
-				cell = row.createCell(2);
-				cell.setCellValue(content.get(i).getEngName());
-				cell = row.createCell(3);
-				cell.setCellValue(content.get(i).getAge());
-				cell = row.createCell(4);
-				cell.setCellValue(content.get(i).getEmail());
-			}
-
-			// 設定檔案輸出串流到指定位置
-			FileOutputStream fileOut = new FileOutputStream("target/generated-sources/employees.xlsx");
-			wb.write(fileOut);
-			fileOut.close();
-			wb.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Apache POI 匯入資料至工作表
+	 * 匯入資料至工作表
 	 * 
-	 * @param sheet
+	 * @param sheetName  被建立的 Sheet Name
 	 * @param headerList 標題列資料
-	 * @param dataList    資料內容
-	 * @return InputStreamResource
+	 * @param rowDataSet 資料內容 (列資料)
+	 * @return InputStreamResource 資料流
 	 */
-	public static InputStreamResource exportDataAsResource(List<String> headerList, List<Object> dataList) {
+	public static InputStreamResource exportDataAsResource(String sheetName, List<String> headerList,
+			List<? extends Object> rowDataSet) {
 		// 處理標題及內容資料
-		XSSFWorkbook book = processWorkbook(headerList, dataList);
+		XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
 
 		// 建立 Resource 往前端送
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
@@ -107,7 +59,28 @@ public class ExcelUtil {
 			ByteArrayInputStream bis = new ByteArrayInputStream(bookByteArray);
 			book.close();
 			return new InputStreamResource(bis);
+		} catch (IOException e) {
+			log.error("轉換錯誤，產生報表失敗 ", e);
+			return null;
+		}
+	}
 
+	/**
+	 * 匯出資料為資料流 byte[]
+	 * 
+	 * @param sheetName  被建立的 Sheet Name
+	 * @param headerList 標題列資料
+	 * @param rowDataSet 資料內容 (列資料)
+	 * @return InputStreamResource
+	 */
+	public static byte[] exportDataAsByteArray(String sheetName, List<String> headerList,
+			List<? extends Object> rowDataSet) {
+		// 處理標題及內容資料
+		XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
+			book.write(bos);
+			book.close();
+			return bos.toByteArray();
 		} catch (IOException e) {
 			log.error("轉換錯誤，產生報表失敗", e);
 			return null;
@@ -116,70 +89,48 @@ public class ExcelUtil {
 
 	/**
 	 * 建立 Excel 表單資料
+	 * 
+	 * @param sheetName  被建立的 Sheet Name
 	 * @param headerList 標題列資料
-	 * @param dataList    資料內容
+	 * @param rowDataSet 資料內容 (列資料)
+	 * @return XSSFWorkbook 表單資料
 	 */
-	public static XSSFWorkbook processWorkbook(List<String> headerList, List<? extends Object> dataList) {
+	public static XSSFWorkbook processWorkbook(String sheetName, List<String> headerList,
+			List<? extends Object> rowDataSet) {
 		// 新建工作簿
 		XSSFWorkbook book = new XSSFWorkbook();
 		// 建立工作表
-		XSSFSheet sheet = book.createSheet("Books");
-
+		XSSFSheet sheet = book.createSheet(sheetName);
+		// 轉換 Header List
 		Object[] headers = headerList.toArray();
-
 		// 資料轉換
 		List<Object[]> dataset = new ArrayList<>();
-		dataList.stream().forEach(e -> {
+		rowDataSet.stream().forEach(e -> {
 			dataset.add(convertObjectToArray(e));
 		});
-
 		// 匯入資料至工作表
 		importData(sheet, headers, dataset);
-
 		return book;
 	}
 
 	/**
-	 * Apache POI 匯入資料至工作表
+	 * 匯入資料
 	 * 
-	 * @param sheet
-	 * @param headerList 標題列資料
-	 * @param dataset    資料內容
-	 * @return InputStreamResource
+	 * @param sheet      表單資料
+	 * @param header     標題資料
+	 * @param rowDataSet 單元格資料列表 (列資料)
 	 */
-	public static byte[] exportDataAsByteArray(List<String> headerList, List<? extends Object> dataList) {
-		// 處理標題及內容資料
-		XSSFWorkbook book = processWorkbook(headerList, dataList);
-
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
-			book.write(bos);
-			book.close();
-			return bos.toByteArray();
-
-		} catch (IOException e) {
-			log.error("轉換錯誤，產生報表失敗", e);
-			return null;
-		}
-	}
-
-	/**
-	 * Apache POI 匯入資料至工作表
-	 * 
-	 * @param sheet
-	 * @param dataset
-	 * @return
-	 */
-	public static void importData(XSSFSheet sheet, Object[] header, List<Object[]> dataset) {
+	public static void importData(XSSFSheet sheet, Object[] header, List<Object[]> rowDataSet) {
 		int rowIdx = -1;
 
 		if (!Objects.isNull(header)) {
 			// 新增第一筆
-			dataset.add(0, header);
+			rowDataSet.add(0, header);
 		} else {
 			rowIdx = 0;
 		}
 
-		for (Object[] arrs : dataset) {
+		for (Object[] arrs : rowDataSet) {
 			// 建立列
 			XSSFRow row = sheet.createRow(++rowIdx);
 
@@ -212,89 +163,40 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * 讀取Excel 單一sheet資料
+	 * 讀取 Excel 單一 sheet 資料
 	 * 
-	 * @param inputStream : 資料流
-	 * @param sheetName   : 工作表名稱
-	 * @return List<map<String, String>>: List<map<標題, 值>>
+	 * @param inputStream 資料流
+	 * @param sheetName   工作表名稱
+	 * @return List<map<String, String>>: List<map<標題, 值>> 一個 Map 是一列資料
 	 * @throws IOException
 	 */
 	public static List<Map<String, String>> readExcelData(InputStream inputStream, String sheetName)
 			throws IOException {
-
 		List<Map<String, String>> result = new ArrayList<>();
-
 		Workbook workbook = new XSSFWorkbook(inputStream);
-
 		processWorkbook(workbook, sheetName, result);
-
 		workbook.close(); // 關閉工作簿以釋放資源
 		return result;
 	}
 
 	/**
-	 * 處理 多個sheet
+	 * 讀取多張表資料，並輸出 Map<sheetName, List<Header, Cell>>
 	 * 
-	 * @param Workbook  workbook
-	 * @param sheetName 表名
-	 * @param 處理後的資料
-	 */
-	private static void processWorkbook(Workbook workbook, String sheetName, List<Map<String, String>> result) {
-
-		Sheet sheet = workbook.getSheet(sheetName);
-
-		// 獲取第一列（標題列）
-		Row titleRow = sheet.getRow(0);
-
-		// 迭代列 (從第 2 列開始)
-		for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-			Map<String, String> map = new HashMap<>();
-			// 資料列
-			Row row = sheet.getRow(rowIndex);
-
-			if (row == null) {
-				break;
-			}
-
-			// 遍歷標題行的每一個單元格
-			Iterator<Cell> titleCellIterator = titleRow.cellIterator();
-			int cellIndex = 0;
-			while (titleCellIterator.hasNext()) {
-				String key = StringUtils.trim(parseCellValue(titleCellIterator.next()));
-				String value = parseCellValue(row.getCell(cellIndex));
-				if (StringUtils.isNotBlank(key)) {
-					map.put(key, value);
-				}
-
-				cellIndex++;
-
-			}
-			log.info("map: {}", map);
-			result.add(map);
-		}
-
-	}
-
-	/**
-	 * 多張表資料
-	 * 
+	 * @param inputStream 資料流
+	 * @return Map<SheetName, List<Map<Header, Cell>>>
 	 * @throws IOException
 	 */
 	public static Map<String, List<Map<String, String>>> readExcelData(InputStream inputStream,
 			List<String> sheetNameList) throws IOException {
-
 		Map<String, List<Map<String, String>>> result = new HashMap<>();
-
+		// 將 InputStream 轉為 Workbook 資料
 		Workbook workbook = new XSSFWorkbook(inputStream);
-
 		sheetNameList.stream().forEach(sheetName -> {
 			List<Map<String, String>> list = new ArrayList<>();
 			processWorkbook(workbook, sheetName, list);
 			result.put(sheetName, list);
 		});
-
 		return result;
-
 	}
 
 	/**
@@ -324,7 +226,7 @@ public class ExcelUtil {
 	/**
 	 * 動態轉換物件為 Object[]
 	 * 
-	 * @param Class
+	 * @param obj
 	 * @return Object[]
 	 */
 	private static Object[] convertObjectToArray(Object obj) {
@@ -345,18 +247,37 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * 本地端下載
+	 * 處理 多個 sheet 並將其加入輸出資料集
 	 * 
-	 * @param book
-	 * @param path 檔案下載路徑
+	 * @param workbook  Workbook
+	 * @param sheetName 表名
+	 * @param dataSet   List<Map<標題, 內容>>
 	 */
-	public static void downloadLocal(XSSFWorkbook book, String path) {
-		try (FileOutputStream os = new FileOutputStream(path)) {
-			book.write(os);
-		} catch (FileNotFoundException e) {
-			log.error("File Not Found ", e);
-		} catch (IOException e) {
-			log.error("轉換錯誤");
+	private static void processWorkbook(Workbook workbook, String sheetName, List<Map<String, String>> dataSet) {
+		Sheet sheet = workbook.getSheet(sheetName);
+		// 獲取第一列（標題列）
+		Row titleRow = sheet.getRow(0);
+		// 迭代列 (從第 2 列開始)
+		for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+			Map<String, String> map = new HashMap<>();
+			// 資料列
+			Row row = sheet.getRow(rowIndex);
+			if (row == null) {
+				break;
+			}
+			// 遍歷標題列的每一個單元格
+			Iterator<Cell> titleCellIterator = titleRow.cellIterator();
+			int cellIndex = 0;
+			while (titleCellIterator.hasNext()) {
+				String key = StringUtils.trim(parseCellValue(titleCellIterator.next()));
+				String value = parseCellValue(row.getCell(cellIndex));
+				if (StringUtils.isNotBlank(key)) {
+					map.put(key, value);
+				}
+				cellIndex++;
+			}
+			log.info("map: {}", map);
+			dataSet.add(map);
 		}
 	}
 

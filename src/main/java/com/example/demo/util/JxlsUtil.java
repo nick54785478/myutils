@@ -15,7 +15,12 @@ import java.util.Objects;
 import org.jxls.common.Context;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
+import org.springframework.stereotype.Component;
 
+/**
+ * Jxls 工具類
+ * */
+@Component
 public class JxlsUtil {
 
 	private static final String TEMPLATE_PATH = "jxls-template";

@@ -14,9 +14,10 @@ import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+/**
+ * 日期轉換工具
+ * */
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateTransformUtil {
@@ -108,7 +109,6 @@ public class DateTransformUtil {
         int firstMonthOfQuarter = (quarter - 1) * 3;
         calendar.set(Calendar.MONTH, firstMonthOfQuarter); // Calendar.MONTH 從0開始（0代表一月，1代表二月，以此類推）。
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        log.info("該季度的第一天日期是: " + calendar.getTime());
         return calendar.getTime();
 	}
 	
@@ -121,7 +121,6 @@ public class DateTransformUtil {
         calendar.setTime(new Date());
         // 設置日期為當月的第一天
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        log.info("當月第一天的日期是: " + calendar.getTime());
         // 取得當月的第一天日期
         return calendar.getTime();
 	}
@@ -137,7 +136,6 @@ public class DateTransformUtil {
         // 設置日期為當年的第一天
         calendar.set(Calendar.MONTH, Calendar.JANUARY);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        log.info("當年的第一天日期是: " + calendar.getTime());
         // 取得當年的第一天日期
         return calendar.getTime();
 	}

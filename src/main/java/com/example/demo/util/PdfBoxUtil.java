@@ -14,13 +14,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+/**
+ * PDF 工具類
+ * */
+@Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PdfBoxUtil {
-	
+
 	/**
 	 * 讀取 pdf 文字檔
 	 * 
@@ -32,8 +35,7 @@ public class PdfBoxUtil {
 	}
 
 	/**
-	 * 讀取 pdf 文字檔
-	 * (註. 格式不會帶入，僅讀出文字)
+	 * 讀取 pdf 文字檔 (註. 格式不會帶入，僅讀出文字)
 	 * 
 	 * @param InputStream
 	 */

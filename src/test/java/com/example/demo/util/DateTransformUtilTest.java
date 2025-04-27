@@ -1,5 +1,7 @@
 package com.example.demo.util;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ class DateTransformUtilTest {
 		String date = "2024-04-29 00:00:00";
 		Date parsedDate = DateTransformUtil.parse(pattern, date);
 		System.out.println("parsed date: "+ parsedDate);
+		assertNotNull(parsedDate);
 	
 	}
 	
@@ -24,6 +27,7 @@ class DateTransformUtilTest {
 		Date now = new Date();
 		String formattedDate = DateTransformUtil.format(pattern, now);
 		System.out.println("formatted date: "+ formattedDate);
+		assertNotNull(formattedDate);
 
 	}
 	
@@ -32,7 +36,7 @@ class DateTransformUtilTest {
 		String period = "QTD";
 		Date firstDay = DateTransformUtil.getFirstDayAccordingPeriod(period);
 		System.out.println("First Day of "+ period + ": " +firstDay);
-		
+		assertNotNull(firstDay);
 	}
 
 }

@@ -19,57 +19,59 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 class BaseDataTransformerTest {
 
-//	@Test
+	@Test
 	void testDateToString() {
 		InData inData = new InData();
 		inData.setCreateDate(new Date());
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
 		log.info("Date: {}", outData.getCreateDate());
-
 		assertNotNull(outData.getCreateDate());
 	}
 
-//	@Test
+	@Test
 	void testStringToDate() {
 		InData inData = new InData();
 		inData.setUpdateDate("2024-09-01 00:00:00");
-
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
 		log.info("Date: {}", outData.getUpdateDate());
 
 		assertNotNull(outData.getUpdateDate());
 	}
 
-//	@Test
+	@Test
 	void testLongToString() {
 		InData inData = new InData();
 		inData.setId(1L);
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
 		log.info("Date: {}", outData.getId());
+		assertNotNull(outData);
 	}
 
-//	@Test
+	@Test
 	void testStringToLong() {
 		InData inData = new InData();
 		inData.setNum("1");
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
 		log.info("Date: {}", outData.getNum());
+		assertNotNull(outData);
 	}
 
-//	@Test
+	@Test
 	void testStringToBigDecimal() {
 		InData inData = new InData();
 		inData.setBigDecimal1("1");
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
 		log.info("Date: {}", outData.getBigDecimal1());
+		assertNotNull(outData);
 	}
 
-//	@Test
+	@Test
 	void testBigDecimalToString() {
 		InData inData = new InData();
 		inData.setBigDecimal2(new BigDecimal("1"));
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
 		log.info("Date: {}", outData.getBigDecimal2());
+		assertNotNull(outData);
 	}
 
 	@Test
@@ -91,6 +93,7 @@ class BaseDataTransformerTest {
 		List<InData> inDataList = List.of(inData1, inData2);
 		List<OutData> outData = BaseDataTransformer.transformData(inDataList, OutData.class);
 		log.info("Out Data List: {}", outData);
+		assertNotNull(outData);
 	}
 	
 	@Test
@@ -98,9 +101,8 @@ class BaseDataTransformerTest {
 		InData inData = new InData();
 		inData.setDataList(List.of(new InnerData("111"), new InnerData("222")));
 		OutData outData = BaseDataTransformer.transformData(inData, OutData.class);
-		
-		
 		log.info("Out Data: {}", outData);
+		assertNotNull(outData);
 	}
 	
 }

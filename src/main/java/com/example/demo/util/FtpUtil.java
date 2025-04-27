@@ -1,6 +1,5 @@
 package com.example.demo.util;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,17 +17,15 @@ import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Ftp Util
- * 使用 FTP 方式於兩台主機之間傳輸檔案
+ * Ftp Util 使用 FTP 方式於兩台主機之間傳輸檔案
  */
-@Log4j2
+@Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FtpUtil {
-
 
 	/**
 	 * 帳號連線對方主機

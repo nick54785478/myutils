@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -38,7 +39,7 @@ import net.sf.jasperreports.export.SimpleTextReportConfiguration;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
-@Log4j2
+@Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JasperReportUtil {
@@ -292,9 +293,6 @@ public class JasperReportUtil {
 
 		// 取得 Jasper 檔 (Azure k8s 環境可能會抓不到，需存到 如: Azure Blob 等位置)
 		var jasper = new ClassPathResource("report" + File.separator + jasperFilename + ".jasper");
-
-		log.debug(jasper);
-
 		return JasperFillManager.fillReport(jasper.getInputStream(), parameters, datasource);
 	}
 
