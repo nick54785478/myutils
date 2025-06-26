@@ -73,6 +73,14 @@ public class DateTransformUtil {
 	}
 
 	/**
+	 * 轉換字串為 LocalDateTime
+ 	 */
+	public static LocalDateTime transformStringToLocalDateTime(String pattern, String date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+		return LocalDateTime.parse(pattern, formatter);
+	}
+
+	/**
 	 * 將 Date 轉換為 LocalDateTime
 	 */
 	private static LocalDateTime transformDateToLocalDateTime(Date date) {
