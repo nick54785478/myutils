@@ -9,16 +9,16 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
-@Service
+@Slf4j
+@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TemplateHtmlUtils {
 	private static final TemplateEngine templateEngine = new TemplateEngine();
