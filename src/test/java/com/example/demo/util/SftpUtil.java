@@ -1,6 +1,5 @@
 package com.example.demo.util;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,6 +22,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * SFTP 傳輸工具類，使用 SFTP 方式於兩台主機之間傳輸檔案
+ */
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -34,7 +36,7 @@ public class SftpUtil {
 	/**
 	 * 帳號連線對方主機
 	 * 
-	 * @param host     Hostname
+	 * @param host     hostname
 	 * @param port     port
 	 * @param username 使用者名稱
 	 * @param password 密碼
@@ -59,10 +61,10 @@ public class SftpUtil {
 
 			// 將通道對象轉換為 ChannelSftp 類型，便於操作 SFTP 特定功能（如文件上傳和下載）。
 			sftp = (ChannelSftp) channel;
-			log.info("connected to " + host);
+			log.info("connected to , {}", host);
 
 		} catch (JSchException e) {
-			log.error("SFTP 連線異常" + e.getMessage());
+			log.error("SFTP 連線異常。", e);
 		}
 	}
 
@@ -76,7 +78,6 @@ public class SftpUtil {
 		if (session != null && session.isConnected()) {
 			session.disconnect();
 		}
-		log.info("關閉連線");
 	}
 
 	/**
@@ -100,11 +101,11 @@ public class SftpUtil {
 		try {
 			FileInputStream fileInputStream = new FileInputStream(uploadFile);
 			sftp.put(fileInputStream, uploadFile.getName());
+			log.debug("fileInputStream: {}", fileInputStream);
 			// 關閉數據流
 			fileInputStream.close();
-			log.info("上傳文件成功");
 		} catch (SftpException | IOException e) {
-			log.error("發生錯誤，" + e.getMessage());
+			log.error("發生錯誤。", e);
 		}
 	}
 
@@ -121,9 +122,8 @@ public class SftpUtil {
 			sftp.cd(remotePath); // 進入該路徑底下
 			File file = new File(filePath);
 			upload(remotePath, file);
-			log.info("上傳文件成功");
 		} catch (SftpException e) {
-			log.error("上傳文件失敗，" + e.getMessage());
+			log.error("上傳文件失敗。" + e.getMessage());
 		}
 	}
 
@@ -159,7 +159,7 @@ public class SftpUtil {
 				}
 			}
 		} catch (SftpException e) {
-			log.error("發生錯誤，" + e.getMessage());
+			log.error("發生錯誤。", e.getMessage());
 		}
 	}
 
@@ -201,7 +201,7 @@ public class SftpUtil {
 		try {
 			sftp.cd(remotePath); // 嘗試進入目錄
 		} catch (SftpException e) {
-			log.info("目標路徑不存在，嘗試創建目錄：" + remotePath);
+			log.info("目標路徑不存在，嘗試創建目錄：{}", remotePath);
 			// 對路徑字串根據"/"進行分割
 			String[] directories = remotePath.split("/");
 
