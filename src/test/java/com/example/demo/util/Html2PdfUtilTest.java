@@ -18,9 +18,9 @@ import org.springframework.core.io.ResourceLoader;
 @SpringBootTest
 class Html2PdfUtilTest {
 
-	static final String HTMLFILEPATH = "/html/quotation.html"; // HTML file path
+	static final String HTMLFILEPATH = "/fly-saucer/html/quotation.html"; // HTML file path
 
-	static final String OUTPUTFILEPATH = "/result/quotation.pdf"; // 檔案輸出路徑
+	static final String OUTPUTFILEPATH = "/fly-saucer/result/quotation.pdf"; // 檔案輸出路徑
 
 	static final String RESOURCE = System.getProperty("user.dir") + "/src/main/resources"; // 靜態資源路徑
 

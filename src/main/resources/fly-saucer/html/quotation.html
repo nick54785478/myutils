@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th='http://www.thymeleaf.org'>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </meta>
+  <title>Quotation Example</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+      padding: 0;
+      margin: 0;
+
+      @bottom-center {
+        content: "第 " counter(page) " 頁 / 共 " counter(pages) " 頁";
+        font-family: SimSun;
+      }
+
+    }
+
+    /* 如果表格超出A4页面大小，则强制分页 */
+    @media screen {
+      table.a4-page-break {
+        display: none;
+        /* 首先隐藏表格 */
+      }
+    }
+
+    body {
+      font-family: SimSun;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      page-break-after: auto;
+      /* 自动分页 */
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    th,
+    td {
+      border: 3px solid black;
+      padding: 5px;
+      text-align: left;
+    }
+
+    .dilver {
+      margin-left: 5%;
+    }
+
+    .header-section {
+      margin-bottom: 20px;
+    }
+
+    .header-table {
+      margin-bottom: 10px;
+    }
+
+    .header-table td {
+      border: none;
+    }
+
+    .header-table td.text-right {
+      text-align: right;
+    }
+
+    .container {
+      width: 50%;
+      margin-left: auto;
+    }
+
+    .container .card {
+      border: 3px solid #150101;
+      padding-left: 10px;
+    }
+
+    .info-table {
+      margin-bottom: 20px;
+      width: 300px;
+    }
+
+    .info-table th {
+      background-color: #f2f2f2;
+    }
+
+    .price-table {
+      width: 300px;
+      margin-left: auto;
+      margin-top: 20px;
+    }
+
+    .price-table td {
+      border: none;
+    }
+
+    .footer-section {
+      font-size: 0.8em;
+    }
+
+    /*換頁符*/
+    .pageNext {
+      page-break-after: always;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header-section">
+    <table class="header-table">
+
+      <tr>
+        <td th:text='${quotationFormatResponse.sellerTitle}' style='font-weight: bold;'>WPG Holdings 大聯大控股股份有限公司</td>
+        <td class='text-right' th:text='${quotationFormatResponse.date}' style='font-weight: bold;'>Date :
+          31-Dec-2023</td>
+      </tr>
+      <tr>
+        <td th:text='${quotationFormatResponse.sellerAddress}'>台北市南港區經貿二路189號</td>
+      </tr>
+      <tr>
+        <td>Phone : <span th:text='${quotationFormatResponse.sellerPhone}'>02 221 0896</span>
+          <span class='dilver'>Fax : <span th:text='${quotationFormatResponse.sellerFax}'>02 221 0896</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>Email : <span th:text='${quotationFormatResponse.sellerEmail}'>happy@gmail.com</span></td>
+      </tr>
+      <tr>
+        <td>Outside Sales : <span th:text='${quotationFormatResponse.sellerContact}'>HappyWang 王開心</span></td>
+      </tr>
+    </table>
+
+    <div class='container'>
+      <h3 th:text='${quotationFormatResponse.buyerTitle}'>ABC Co.</h3>
+      <div class='card'>
+        <p>聯絡人 : <span th:text='${quotationFormatResponse.buyerContact}'>Amy Chen</span></p>
+        <p>地址 : <span th:text='${quotationFormatResponse.buyerAddress}'>台北市內湖區瑞光路318號</span></p>
+        <p>統一編號 : <span th:text='${quotationFormatResponse.buyerUuid}'>xxxxxxxx</span></p>
+        <p>電話 : <span th:text="${quotationFormatResponse.buyerPhone}">02-xxxxxxxx</span> <span class='dilver'>傳真 :
+            <span th:text="${quotationFormatResponse.buyerFax}">02-xxxxxxxx</span></span>
+        </p>
+        <p>Email : <span th:text="${quotationFormatResponse.buyerEmail}">buyer@gmail.com</span></p>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <td style="text-align: right;  border: none; ">
+        <table class="info-table">
+          <tr>
+            <th>Payment Terms</th>
+            <th>Ship Term</th>
+            <th>Currency</th>
+          </tr>
+          <tr>
+            <td th:text="${quotationFormatResponse.paymentTerm}">T/T</td>
+            <td th:text="${quotationFormatResponse.shippingTerm}"></td>
+            <td th:text="${quotationFormatResponse.currency}">USD</td>
+          </tr>
+        </table>
+      </td>
+      <td style="text-align: right; vertical-align: bottom;  border: none;">
+        <a th:href="'#'">Confrm ALL(Yes)<br />Confrm ALL(No)</a>
+      </td>
+    </tr>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th>QQ#</th>
+        <th>Brand</th>
+        <th>Item No.</th>
+        <th>ERP Vendor Item</th>
+        <th>Quantity</th>
+        <th>MOQ</th>
+        <th>Pack Type</th>
+        <th>L/T</th>
+        <th>Unit Price</th>
+        <th>Amount($)</th>
+        <th>Confirm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <!-- <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr>
+      <tr th:each="formatQuoteData,status : ${quotationFormatResponse.formatQuoteDataList}">
+        <td th:text="${formatQuoteData.qqNo}">QQ23102300017</td>
+        <td th:text="${formatQuoteData.brand}">DIODES</td>
+        <td th:text="${formatQuoteData.itemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.erpVendorItemNo}">BAV99-7-F</td>
+        <td th:text="${formatQuoteData.qty}">400</td>
+        <td th:text="${formatQuoteData.moqSpq}">10</td>
+        <td th:text="${formatQuoteData.packType}">Tape and Reel</td>
+        <td th:text="${formatQuoteData.lt}">10days</td>
+        <td th:text="${formatQuoteData.unitPrice}">0.02</td>
+        <td th:text="${formatQuoteData.amount}">8</td>
+        <td>
+          <a th:href="'#'" th:text="${formatQuoteData.confirm}">YES/NO</a>
+        </td>
+      </tr> -->
+    </tbody>
+  </table>
+  <table class='price-table'>
+    <tr>
+      <td></td>
+      <td>小計</td>
+      <td></td>
+      <td th:text="${quotationFormatResponse.orderFinancialSummaryData.subtotal}">$ 10</td>
+    </tr>
+    <tr>
+      <td>營業稅</td>
+      <td></td>
+      <td th:text="${quotationFormatResponse.orderFinancialSummaryData.salesTax}">5.00 % </td>
+      <td th:text="${quotationFormatResponse.orderFinancialSummaryData.salesTaxAmount}">$ 0.5</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>總計</td>
+      <td></td>
+      <td th:text="${quotationFormatResponse.orderFinancialSummaryData.total}">$ 10.5</td>
+    </tr>
+  </table>
+
+  </body>
+
+</html>

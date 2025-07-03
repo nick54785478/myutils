@@ -1,6 +1,5 @@
 package com.example.demo.util;
 
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -11,12 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.example.demo.model.jxls.BuyerData;
@@ -68,8 +65,10 @@ class JxlsUtilTest {
 	@Test
 	void testExportMultipleSheetExcel() {
 		var resource = resourceLoader.getResource("classpath:/jxls/multi_quotation.xlsx");
-		try (OutputStream outputStream = new FileOutputStream(new File(RESOURCE + "/jxls/result/multi_quotation.xlsx"))) {
+		try (OutputStream outputStream = new FileOutputStream(
+				new File(RESOURCE + "/jxls/result/multi_quotation.xlsx"))) {
 
+			// 註. 為方便測試 sheet1 與 sheet2 內容其實是相同的，實務上應該會不同
 			Map<String, Map<String, Object>> model = new HashMap<>();
 			model.put("sheet1", map);
 			model.put("sheet2", map);
