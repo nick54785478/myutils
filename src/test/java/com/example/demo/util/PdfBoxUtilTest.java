@@ -21,7 +21,7 @@ class PdfBoxUtilTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		this.resource = resourceLoader.getResource("classpath:result/quotation.pdf");
+		this.resource = resourceLoader.getResource("classpath:pdfbox/quotation.pdf");
 	}
 
 	@Test

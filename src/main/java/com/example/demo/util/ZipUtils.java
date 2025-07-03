@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -87,20 +86,20 @@ public class ZipUtils {
 		return data;
 	}
 
-	public static void main(String[] args) {
-		try {
-			byte[] pdfFile = readPdfFile(System.getProperty("user.home") + "/Downloads/report1.pdf");
-			byte[] pdfFile1 = readPdfFile(System.getProperty("user.home") + "/Downloads/email.pdf");
-			Map<String, byte[]> map = new HashMap<>();
-
-			map.put("report1.pdf", pdfFile);
-			map.put("email.pdf", pdfFile1);
-
-			packToZip(map, System.getProperty("user.home") + "/Downloads/download.zip");
-			System.out.println("下載成功 zip");
-		} catch (Exception e) {
-			log.error("發生錯誤", e);
-
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			byte[] pdfFile = readPdfFile(System.getProperty("user.home") + "/Downloads/report1.pdf");
+//			byte[] pdfFile1 = readPdfFile(System.getProperty("user.home") + "/Downloads/email.pdf");
+//			Map<String, byte[]> map = new HashMap<>();
+//
+//			map.put("report1.pdf", pdfFile);
+//			map.put("email.pdf", pdfFile1);
+//
+//			packToZip(map, System.getProperty("user.home") + "/Downloads/download.zip");
+//			System.out.println("下載成功 zip");
+//		} catch (Exception e) {
+//			log.error("發生錯誤", e);
+//
+//		}
+//	}
 }

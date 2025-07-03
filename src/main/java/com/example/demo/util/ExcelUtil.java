@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -138,7 +139,6 @@ public class ExcelUtil {
 			for (Object field : arrs) {
 				// 建立單元格
 				XSSFCell cell = row.createCell(++colIdx);
-
 				// 單元格寫入內容
 				if (field instanceof String) {
 					cell.setCellValue((String) field);
@@ -200,7 +200,53 @@ public class ExcelUtil {
 	}
 
 	/**
+	 * 讀取 Excel 資料
+	 * 
+	 * @param inputStream : 資料流
+	 * @return Map<String, List<Map<String, String>>>
+	 */
+	public static Map<String, List<Map<String, String>>> readExcelData(InputStream inputStream) throws IOException {
+		Map<String, List<Map<String, String>>> result = new HashMap<>();
+		Workbook workbook = new XSSFWorkbook(inputStream);
+		// 讀取所有 Sheet
+		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+			Sheet sheet = workbook.getSheetAt(i);
+			String sheetName = sheet.getSheetName();
+			List<Map<String, String>> sheetData = new ArrayList<>();
+			List<String> headers = new ArrayList<>();
+
+			// 取得 Header (第一列)
+			Row headerRow = sheet.getRow(0);
+			if (headerRow != null) {
+				for (Cell cell : headerRow) {
+					headers.add(cell.getStringCellValue().trim());
+				}
+			}
+
+			// 讀取資料 (從第二列開始)
+			for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+				Row row = sheet.getRow(r);
+				if (row == null)
+					continue;
+
+				Map<String, String> rowData = new LinkedHashMap<>();
+				for (int c = 0; c < headers.size(); c++) {
+					Cell cell = row.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+					rowData.put(headers.get(c), parseCellValue(cell));
+				}
+				sheetData.add(rowData);
+			}
+			result.put(sheetName, sheetData);
+		}
+		workbook.close();
+		return result;
+	}
+
+	/**
 	 * 轉換單元格內的值
+	 * 
+	 * @param cell 單元格
+	 * @return 字串
 	 */
 	private static String parseCellValue(Cell cell) {
 		String cellValue = "";

@@ -1,6 +1,8 @@
 package com.example.demo.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +13,13 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.InputStreamResource;
 
 import com.example.demo.model.employee.Employee;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SpringBootTest
 class ExcelUtilTest {
 
@@ -40,7 +46,7 @@ class ExcelUtilTest {
 	 */
 	@Test
 	void test() {
-		ExcelUtilTest.book = ExcelUtil.processWorkbook(this.headers, this.employees);
+		ExcelUtilTest.book = ExcelUtil.processWorkbook("employee", this.headers, this.employees);
 	}
 
 	/**
@@ -50,9 +56,17 @@ class ExcelUtilTest {
 	 */
 	@Test
 	void testReadExcelData() throws IOException {
-		byte[] byteArray = ExcelUtil.exportDataAsByteArray(headers, employees);
-		List<Map<String, String>> excelData = ExcelUtil.readExcelData(new ByteArrayInputStream(byteArray), "Books");
+		// 寫入並建立 Byte[]
+		byte[] byteArray = ExcelUtil.exportDataAsByteArray("employee", headers, employees);
+		List<Map<String, String>> excelData = ExcelUtil.readExcelData(new ByteArrayInputStream(byteArray), "employee");
 		System.out.println("excelData: " + excelData);
+	}
+
+	@Test
+	void testReadExcelDataWithoutSheetNameList() throws IllegalStateException, IOException {
+		InputStreamResource resource = ExcelUtil.exportDataAsResource("employee", headers, employees);
+		Map<String, List<Map<String, String>>> excelData = ExcelUtil.readExcelData(resource.getInputStream());
+		System.out.println(excelData);
 	}
 
 	/**
@@ -61,9 +75,24 @@ class ExcelUtilTest {
 	@AfterAll
 	static void tearDown() throws Exception {
 		// 本地端下載
-		String outputPath = RESOURCE + "/result/employees.xlsx"; // 檔案輸出路徑
-		ExcelUtil.downloadLocal(book, outputPath);
+		String outputPath = RESOURCE + "/excel/result/employees.xlsx"; // 檔案輸出路徑
+		downloadLocal(book, outputPath);
 
 	}
 
+	/**
+	 * 本地端下載
+	 * 
+	 * @param book
+	 * @param path 檔案下載路徑
+	 */
+	private static void downloadLocal(XSSFWorkbook book, String path) {
+		try (FileOutputStream os = new FileOutputStream(path)) {
+			book.write(os);
+		} catch (FileNotFoundException e) {
+			log.error("File Not Found ", e);
+		} catch (IOException e) {
+			log.error("轉換錯誤");
+		}
+	}
 }

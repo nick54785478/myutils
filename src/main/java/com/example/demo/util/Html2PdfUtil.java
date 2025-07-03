@@ -99,7 +99,7 @@ public class Html2PdfUtil {
 	}
 
 	/**
-	 * pdf添加頁碼
+	 * pdf 添加頁碼
 	 *
 	 * @param inputStream
 	 * @param outputStream

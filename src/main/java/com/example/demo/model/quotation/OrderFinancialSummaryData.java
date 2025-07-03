@@ -12,6 +12,4 @@ public class OrderFinancialSummaryData {
     private String salesTax;
     private String salesTaxAmount;
     private String total;
-
-
 }
