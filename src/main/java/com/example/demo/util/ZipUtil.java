@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ZipUtils {
+public class ZipUtil {
 
 	/**
 	 * 打包為zip

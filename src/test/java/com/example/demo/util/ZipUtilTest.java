@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 @SpringBootTest
-class ZipUtilsTest {
+class ZipUtilTest {
 
 	@Autowired
 	ResourceLoader resourceLoader;
@@ -40,7 +40,7 @@ class ZipUtilsTest {
 		String fileName = "quotation.pdf";
 		String zipName = RESOURCE + "/zip/result/quotation.zip";
 
-		ZipUtils.packToZip(this.pdfFile, fileName, zipName);
+		ZipUtil.packToZip(this.pdfFile, fileName, zipName);
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ class ZipUtilsTest {
 		
 		Map<String, byte[]> map = Map.of(fileName, this.pdfFile, fileName2, this.pdfFile2);
 		
-		ZipUtils.packToZip(map, zipName);
+		ZipUtil.packToZip(map, zipName);
 
 	}
 
