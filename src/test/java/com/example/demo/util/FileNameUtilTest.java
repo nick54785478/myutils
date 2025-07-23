@@ -83,5 +83,11 @@ class FileNameUtilTest {
 				"f816b17b-ffbb-4a90-82f3-3c5c4f4da27f",
 				result);
 	}
+	
+	@Test
+	void testAssemblePath() {
+		String url = FileNameUtil.assemblePath("filePath", "fileName");
+		assertEquals("filePath/fileName", url);
+	}
 
 }

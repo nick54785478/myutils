@@ -160,7 +160,7 @@ public class FileNameUtil {
      * @param segments 路徑片段（不限數量）
      * @return 組合後的路徑字串
      */
-    public String assemblePath(String... segments) {
+    public static String assemblePath(String... segments) {
       return Arrays.stream(segments)
         .filter(Objects::nonNull)
         .map(s -> s.replaceAll("^/+", "").replaceAll("/+$", ""))
