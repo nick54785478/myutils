@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TemplateHtmlUtils {
+public class TemplateHtmlUtil {
 	private static final TemplateEngine templateEngine = new TemplateEngine();
 
 	/**
@@ -30,11 +30,20 @@ public class TemplateHtmlUtils {
 	 * @param fileName - 檔案名稱
 	 * @return html 字串
 	 */
-	public static String readHtmlFile(String path, String fileName) throws IOException {
-		String filePath = path + fileName + ".html";
+	public static String readHtmlFile(String filePath, String fileName) throws IOException {
 		// 建立類路徑資源物件
-		InputStream inputStream = TemplateHtmlUtils.class.getResourceAsStream(filePath);
+		InputStream inputStream = getResource(filePath, fileName);
 		// 讀取檔案內容並轉換為字串
+		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * 讀取 Html 模板
+	 * 
+	 * @param InputStream 資料流
+	 * @return html 字串
+	 */
+	public static String readHtmlFile(InputStream inputStream) throws IOException {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
@@ -117,4 +126,19 @@ public class TemplateHtmlUtils {
 			return Locale.US;
 		}
 	}
+
+	/**
+	 * 從 classpath 取得資料流
+	 *
+	 * @param filePath 檔案路徑（以 `/` 開頭）
+	 * @param fileName 檔案名稱（可省略 .html 副檔名）
+	 */
+	public static InputStream getResource(String filePath, String fileName) {
+		if (!fileName.endsWith(".html")) {
+			fileName += ".html";
+		}
+		String url = filePath + "/" + fileName;
+		return TemplateHtmlUtil.class.getResourceAsStream(url);
+	}
+
 }
