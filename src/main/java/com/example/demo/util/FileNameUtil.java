@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -151,6 +152,20 @@ public class FileNameUtil {
         String[] parts = fullPath.split("/+");
         if (index >= parts.length) return null;
         return parts[index];
+    }
+
+    /**
+     * 組合路徑，會自動清理多餘的斜線，忽略 null 與空字串。
+     *
+     * @param segments 路徑片段（不限數量）
+     * @return 組合後的路徑字串
+     */
+    public String assemblePath(String... segments) {
+      return Arrays.stream(segments)
+        .filter(Objects::nonNull)
+        .map(s -> s.replaceAll("^/+", "").replaceAll("/+$", ""))
+        .filter(s -> !s.isEmpty())
+        .collect(Collectors.joining("/"));
     }
 
 }
