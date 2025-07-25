@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontConfig>
+    <fontMapping>
+        <pdfFont>
+            <fontName>MSJH</fontName> <!-- 字體名稱（對應報表設計中指定的 font name） -->
+            <ttfFile>fonts/MSJH.TTC</ttfFile> <!-- 字型檔案相對路徑 -->
+            <isTTC>true</isTTC> <!-- 指定為 TTC 檔 -->
+            <ttcIndex>1</ttcIndex> <!-- 字型索引位置 -->
+            <fontEncoding>Identity-H</fontEncoding> <!-- 編碼設定，支援中文顯示 -->
+            <embed>true</embed> <!-- 是否嵌入 PDF 中 -->
+        </pdfFont>
+    </fontMapping>
+</fontConfig>
