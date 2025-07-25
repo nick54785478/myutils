@@ -3,10 +3,13 @@ package com.example.demo.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -66,14 +69,14 @@ public class TemplateHtmlUtil {
 	/**
 	 * 建立標準 HTML 內容
 	 * 
-	 * @param path     - 檔案路徑
+	 * @param filePath     - 檔案路徑
 	 * @param fileName - 檔案名稱
 	 * @param params   - 模板參數 Map
 	 * @return 經處理後的 Html String
 	 */
-	public static String generateStandardHtmlContent(String path, String fileName, Map<String, Object> params)
+	public static String generateStandardHtmlContent(String filePath, String fileName, Map<String, Object> params)
 			throws IOException {
-		String htmlString = readHtmlFile(path, fileName);
+		String htmlString = readHtmlFile(filePath, fileName);
 		return parseHtmlString(htmlString, params);
 	}
 
@@ -134,11 +137,30 @@ public class TemplateHtmlUtil {
 	 * @param fileName 檔案名稱（可省略 .html 副檔名）
 	 */
 	public static InputStream getResource(String filePath, String fileName) {
-		if (!fileName.endsWith(".html")) {
-			fileName += ".html";
-		}
-		String url = filePath + "/" + fileName;
+		String url = assemblePath(filePath, fileName);
 		return TemplateHtmlUtil.class.getResourceAsStream(url);
+	}
+
+	/**
+	 * 組合路徑，會自動清理多餘的斜線，忽略 null 與空字串。
+	 *
+	 * @param segments 路徑片段（不限數量）
+	 * @return 組合後的路徑字串
+	 */
+	private static String assemblePath(String... segments) {
+		String joined = Arrays.stream(segments).filter(Objects::nonNull)
+				.map(s -> s.replaceAll("^/+", "").replaceAll("/+$", "")).filter(s -> !s.isEmpty())
+				.collect(Collectors.joining("/"));
+		// 確保開頭為 /
+		if (!joined.startsWith("/")) {
+			joined = "/" + joined;
+		}
+
+		// 確保結尾為 .html
+		if (!joined.endsWith(".html")) {
+			joined += ".html";
+		}
+		return joined;
 	}
 
 }
