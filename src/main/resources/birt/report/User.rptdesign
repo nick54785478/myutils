@@ -3,10 +3,22 @@
     <property name="createdBy">Eclipse BIRT Designer Version 4.20.0.v202505111501</property>
     <property name="units">in</property>
     <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">auto layout</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <property name="imageDPI">96</property>
     <parameters>
         <scalar-parameter name="teacher" id="11">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="referenceNo" id="136">
             <property name="valueType">static</property>
             <property name="dataType">string</property>
             <property name="distinct">true</property>
@@ -36,11 +48,21 @@
                 </structure>
                 <structure>
                     <property name="position">3</property>
-                    <property name="name">score</property>
-                    <property name="dataType">float</property>
+                    <property name="name">chineseScore</property>
+                    <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="position">4</property>
+                    <property name="name">mathScore</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">englishScore</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
                     <property name="name">testTime</property>
                     <property name="dataType">date</property>
                 </structure>
@@ -55,8 +77,16 @@
                     <text-property name="displayName">name</text-property>
                 </structure>
                 <structure>
-                    <property name="columnName">score</property>
-                    <text-property name="displayName">score</text-property>
+                    <property name="columnName">chineseScore</property>
+                    <text-property name="displayName">chineseScore</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">mathScore</property>
+                    <text-property name="displayName">mathScore</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">englishScore</property>
+                    <text-property name="displayName">englishScore</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">testTime</property>
@@ -77,11 +107,21 @@
                     </structure>
                     <structure>
                         <property name="position">3</property>
-                        <property name="name">score</property>
-                        <property name="dataType">float</property>
+                        <property name="name">chineseScore</property>
+                        <property name="dataType">integer</property>
                     </structure>
                     <structure>
                         <property name="position">4</property>
+                        <property name="name">mathScore</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">englishScore</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
                         <property name="name">testTime</property>
                         <property name="dataType">date</property>
                     </structure>
@@ -113,7 +153,9 @@ var rowMap = this.dataList.get(this.index);
 // 設定對應的欄位（欄位名稱需與 DataSet 的 Output Columns 對應）
 row["number"] = rowMap.get("number");
 row["name"] = rowMap.get("name");
-row["score"] = rowMap.get("score");
+row["chineseScore"] = rowMap.get("chineseScore");
+row["mathScore"] = rowMap.get("mathScore");
+row["englishScore"] = rowMap.get("englishScore");
 row["testTime"] = rowMap.get("testTime");
 
 // 移動索引到下一筆
@@ -125,27 +167,104 @@ return true;
     </data-sets>
     <page-setup>
         <simple-master-page name="Simple MasterPage" id="2">
+            <page-header>
+                <grid id="117">
+                    <column id="118"/>
+                    <column id="119"/>
+                    <column id="120"/>
+                    <row id="121">
+                        <cell id="122"/>
+                        <cell id="123"/>
+                        <cell id="124"/>
+                    </row>
+                    <row id="125">
+                        <cell id="126">
+                            <property name="colSpan">3</property>
+                            <property name="rowSpan">1</property>
+                            <text id="133">
+                                <property name="fontSize">14pt</property>
+                                <property name="fontWeight">bold</property>
+                                <property name="textAlign">center</property>
+                                <property name="contentType">auto</property>
+                                <text-property name="content"><![CDATA[一年忠班成績單]]></text-property>
+                            </text>
+                        </cell>
+                    </row>
+                    <row id="129">
+                        <cell id="130">
+                            <property name="colSpan">3</property>
+                            <property name="rowSpan">1</property>
+                            <property name="borderBottomStyle">solid</property>
+                            <property name="borderBottomWidth">medium</property>
+                            <property name="textAlign">right</property>
+                            <text-data id="135">
+                                <expression name="valueExpr">"Ref No." + params["referenceNo"]</expression>
+                                <property name="contentType">html</property>
+                            </text-data>
+                        </cell>
+                    </row>
+                </grid>
+            </page-header>
             <page-footer>
-                <text id="3">
-                    <property name="contentType">html</property>
-                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
-                </text>
+                <grid id="62">
+                    <column id="63"/>
+                    <column id="64"/>
+                    <column id="210"/>
+                    <column id="212"/>
+                    <column id="214"/>
+                    <column id="216"/>
+                    <column id="65"/>
+                    <column id="66"/>
+                    <row id="67">
+                        <cell id="68"/>
+                        <cell id="69"/>
+                        <cell id="209"/>
+                        <cell id="211"/>
+                        <cell id="213"/>
+                        <cell id="215"/>
+                        <cell id="70"/>
+                        <cell id="71">
+                            <grid id="198">
+                                <column id="199"/>
+                                <column id="200"/>
+                                <column id="201"/>
+                                <row id="202">
+                                    <cell id="203">
+                                        <auto-text id="204">
+                                            <property name="textAlign">center</property>
+                                            <property name="type">page-number</property>
+                                        </auto-text>
+                                    </cell>
+                                    <cell id="205">
+                                        <text id="206">
+                                            <property name="textAlign">center</property>
+                                            <property name="contentType">plain</property>
+                                            <text-property name="content"><![CDATA[/]]></text-property>
+                                        </text>
+                                    </cell>
+                                    <cell id="207">
+                                        <auto-text id="208">
+                                            <property name="textAlign">center</property>
+                                            <property name="type">total-page</property>
+                                        </auto-text>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                    </row>
+                </grid>
             </page-footer>
         </simple-master-page>
     </page-setup>
     <body>
-        <text-data id="12">
-            <property name="fontSize">12pt</property>
-            <expression name="valueExpr">科目: 國文</expression>
-            <property name="contentType">auto</property>
-        </text-data>
         <text-data id="10">
             <property name="fontSize">12pt</property>
             <property name="textAlign">right</property>
             <expression name="valueExpr">"導師: "+ params["teacher"] + "老師"</expression>
             <property name="contentType">html</property>
         </text-data>
-        <table id="33">
+        <text id="61"/>
+        <table id="138">
             <property name="dataSet">User</property>
             <list-property name="boundDataColumns">
                 <structure>
@@ -161,10 +280,22 @@ return true;
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
-                    <property name="name">score</property>
-                    <text-property name="displayName">score</text-property>
-                    <expression name="expression" type="javascript">dataSetRow["score"]</expression>
-                    <property name="dataType">float</property>
+                    <property name="name">chineseScore</property>
+                    <text-property name="displayName">chineseScore</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["chineseScore"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">mathScore</property>
+                    <text-property name="displayName">mathScore</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mathScore"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">englishScore</property>
+                    <text-property name="displayName">englishScore</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["englishScore"]</expression>
+                    <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">testTime</property>
@@ -172,33 +303,86 @@ return true;
                     <expression name="expression" type="javascript">dataSetRow["testTime"]</expression>
                     <property name="dataType">date</property>
                 </structure>
+                <structure>
+                    <property name="name">Aggregation</property>
+                    <text-property name="displayName">國文平均</text-property>
+                    <property name="dataType">float</property>
+                    <property name="aggregateFunction">AVE</property>
+                    <list-property name="arguments">
+                        <structure>
+                            <property name="name">Expression</property>
+                            <expression name="value" type="javascript">row["chineseScore"]</expression>
+                        </structure>
+                    </list-property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">Aggregation_1</property>
+                    <text-property name="displayName">數學平均</text-property>
+                    <property name="dataType">float</property>
+                    <property name="aggregateFunction">AVE</property>
+                    <list-property name="arguments">
+                        <structure>
+                            <property name="name">Expression</property>
+                            <expression name="value" type="javascript">row["mathScore"]</expression>
+                        </structure>
+                    </list-property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">Aggregation_2</property>
+                    <text-property name="displayName">英文平均</text-property>
+                    <property name="dataType">float</property>
+                    <property name="aggregateFunction">AVE</property>
+                    <list-property name="arguments">
+                        <structure>
+                            <property name="name">Expression</property>
+                            <expression name="value" type="javascript">row["englishScore"]</expression>
+                        </structure>
+                    </list-property>
+                    <property name="allowExport">true</property>
+                </structure>
             </list-property>
-            <column id="57"/>
-            <column id="58"/>
-            <column id="59"/>
-            <column id="60"/>
+            <column id="172"/>
+            <column id="173"/>
+            <column id="174"/>
+            <column id="175"/>
+            <column id="176"/>
+            <column id="177"/>
             <header>
-                <row id="34">
-                    <cell id="35">
-                        <label id="36">
+                <row id="139">
+                    <cell id="140">
+                        <label id="141">
                             <property name="fontSize">12pt</property>
                             <text-property name="text">座號</text-property>
                         </label>
                     </cell>
-                    <cell id="37">
-                        <property name="fontSize">12pt</property>
-                        <label id="38">
+                    <cell id="142">
+                        <label id="143">
+                            <property name="fontSize">12pt</property>
                             <text-property name="text">姓名</text-property>
                         </label>
                     </cell>
-                    <cell id="39">
-                        <label id="40">
+                    <cell id="144">
+                        <label id="145">
                             <property name="fontSize">12pt</property>
-                            <text-property name="text">分數</text-property>
+                            <text-property name="text">國文</text-property>
                         </label>
                     </cell>
-                    <cell id="41">
-                        <label id="42">
+                    <cell id="146">
+                        <label id="147">
+                            <property name="fontSize">12pt</property>
+                            <text-property name="text">數學</text-property>
+                        </label>
+                    </cell>
+                    <cell id="148">
+                        <label id="149">
+                            <property name="fontSize">12pt</property>
+                            <text-property name="text">英文</text-property>
+                        </label>
+                    </cell>
+                    <cell id="150">
+                        <label id="151">
                             <property name="fontSize">12pt</property>
                             <text-property name="text">考試時間</text-property>
                         </label>
@@ -206,30 +390,44 @@ return true;
                 </row>
             </header>
             <detail>
-                <row id="43">
-                    <cell id="44">
-                        <data id="45">
+                <row id="152">
+                    <cell id="153">
+                        <data id="154">
                             <property name="fontSize">12pt</property>
                             <property name="textAlign">center</property>
                             <property name="resultSetColumn">number</property>
                         </data>
                     </cell>
-                    <cell id="46">
-                        <property name="textAlign">center</property>
-                        <data id="47">
+                    <cell id="155">
+                        <data id="156">
                             <property name="fontSize">12pt</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">name</property>
                         </data>
                     </cell>
-                    <cell id="48">
-                        <data id="49">
+                    <cell id="157">
+                        <data id="158">
                             <property name="fontSize">12pt</property>
                             <property name="textAlign">center</property>
-                            <property name="resultSetColumn">score</property>
+                            <property name="resultSetColumn">chineseScore</property>
                         </data>
                     </cell>
-                    <cell id="50">
-                        <data id="51">
+                    <cell id="159">
+                        <data id="160">
+                            <property name="fontSize">12pt</property>
+                            <property name="textAlign">center</property>
+                            <property name="resultSetColumn">mathScore</property>
+                        </data>
+                    </cell>
+                    <cell id="161">
+                        <data id="162">
+                            <property name="fontSize">12pt</property>
+                            <property name="textAlign">center</property>
+                            <property name="resultSetColumn">englishScore</property>
+                        </data>
+                    </cell>
+                    <cell id="163">
+                        <data id="164">
                             <property name="fontSize">12pt</property>
                             <property name="textAlign">center</property>
                             <property name="resultSetColumn">testTime</property>
@@ -238,11 +436,77 @@ return true;
                 </row>
             </detail>
             <footer>
-                <row id="52">
-                    <cell id="53"/>
-                    <cell id="54"/>
-                    <cell id="55"/>
-                    <cell id="56"/>
+                <row id="165">
+                    <cell id="166"/>
+                    <cell id="167"/>
+                    <cell id="168"/>
+                    <cell id="169"/>
+                    <cell id="170">
+                        <text id="195">
+                            <property name="fontSize">12pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="contentType">auto</property>
+                            <text-property name="content"><![CDATA[國文平均:]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="171">
+                        <data id="253">
+                            <property name="fontSize">12pt</property>
+                            <structure name="numberFormat">
+                                <property name="category">Fixed</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                            </structure>
+                            <property name="resultSetColumn">Aggregation</property>
+                        </data>
+                    </cell>
+                </row>
+                <row id="179">
+                    <cell id="180"/>
+                    <cell id="181"/>
+                    <cell id="182"/>
+                    <cell id="183"/>
+                    <cell id="184">
+                        <text id="196">
+                            <property name="fontSize">12pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="contentType">auto</property>
+                            <text-property name="content"><![CDATA[數學平均:]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="185">
+                        <property name="fontSize">12pt</property>
+                        <data id="254">
+                            <structure name="numberFormat">
+                                <property name="category">Fixed</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                            </structure>
+                            <property name="resultSetColumn">Aggregation_1</property>
+                        </data>
+                    </cell>
+                </row>
+                <row id="186">
+                    <cell id="187"/>
+                    <cell id="188"/>
+                    <cell id="189"/>
+                    <cell id="190"/>
+                    <cell id="191">
+                        <text id="197">
+                            <property name="fontSize">12pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="contentType">auto</property>
+                            <text-property name="content"><![CDATA[英文平均:]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="192">
+                        <data id="255">
+                            <property name="fontSize">12pt</property>
+                            <structure name="numberFormat">
+                                <property name="category">Fixed</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                            </structure>
+                            <property name="resultSetColumn">Aggregation_2</property>
+                        </data>
+                    </cell>
                 </row>
             </footer>
         </table>
