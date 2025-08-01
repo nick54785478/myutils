@@ -18,116 +18,149 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		<!-- Spring Data JPA，用於簡化 JPA 整合與資料存取 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<!-- 
+		
+		<!-- zip4j：支援密碼壓縮與解壓的 ZIP 處理工具 -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		    <groupId>net.lingala.zip4j</groupId>
+		    <artifactId>zip4j</artifactId>
+		    <version>2.11.5</version>
 		</dependency>
-		-->
+		
+		<!-- Apache Commons Net：支援 FTP、Telnet、SMTP 等網路協定 -->
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
 			<version>3.11.1</version>
 		</dependency>
+		
+		<!-- Spring Boot Thymeleaf 模板引擎 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		
+		<!-- Spring Boot Web 應用開發所需，如 REST API、Tomcat、JSON 處理等 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		
+		<!-- BIRT（Business Intelligence Reporting Tool）報表執行引擎 -->
 		<dependency>
 		    <groupId>ch.reportingsoft.birt</groupId>
 		    <artifactId>birt-runtime-bundle</artifactId>
 		    <version>4.20.0</version>
 		    <type>pom</type>
 		</dependency> 
+	
+		<!-- JSch：Java 實現的 SSH2 用戶端，用於 SFTP、執行遠端指令等 -->
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>0.1.55</version>
 		</dependency>
+		
+		<!-- Thymeleaf 核心模板引擎 -->
 		<dependency>
 		    <groupId>org.thymeleaf</groupId>
 		    <artifactId>thymeleaf</artifactId>
 		</dependency>
+		
+		<!-- H2 資料庫：輕量級的記憶體資料庫，常用於測試或開發階段 -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!-- Spring Boot 測試工具（包含 JUnit、Mockito 等） -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- Lombok：簡化 Java 程式碼的工具，可自動產生 getter/setter 等 -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- ModelMapper：物件屬性對應工具，用於 DTO ↔ Entity 轉換 -->
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports</artifactId>
-			<version>6.20.0</version>
-		</dependency>
+		
+		<!-- Flying Saucer PDF：XHTML 轉 PDF 工具（依賴 iText 產生 PDF） -->
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
 			<artifactId>flying-saucer-pdf</artifactId>
 			<version>9.7.1</version>
 		</dependency>
-		<!-- Flying Saucer 需引入 groovy-->
+		<!-- Groovy：Flying Saucer 相依的腳本語言支援 (即 Flying Saucer 需引入 groovy) -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 			<version>3.0.20</version>
 			<type>pom</type>
 		</dependency>
-		<!-- JasperReports是一個Java庫，用於生成和打印報表 -->
+		
+		<!-- JasperReports：用於產生各類格式的報表，如 PDF、HTML 等 -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>6.20.6</version>
 		</dependency>
+		
+		<!-- iText PDF（5.x）：PDF 處理工具（OpenPDF、Flying Saucer 可能會依賴） -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itextpdf</artifactId>
 			<version>5.5.13.3</version>
 		</dependency>
+		
+		<!-- Apache PDFBox：另一套 PDF 處理函式庫（讀、寫、合併、加密等） -->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
 			<version>3.0.2</version>
 		</dependency>
+		
+		<!-- Apache POI：支援 Microsoft Excel、Word 的讀寫 -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>5.2.5</version>
 		</dependency>
+		
+		<!-- Apache POI 的 OOXML 支援（.xlsx, .docx 等） -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>5.2.5</version>
 		</dependency>
+		
+		<!-- Apache Commons Lang：常用的工具類，提供 StringUtils、ObjectUtils 等 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		
+		<!-- JXLS：Excel 報表輸出工具，支援基於模板填值 -->
 		<dependency>
 			<groupId>org.jxls</groupId>
 			<artifactId>jxls</artifactId>
 			<version>2.14.0</version>
 		</dependency>
+		<!-- JXLS 的 POI 整合模組，用於處理 Excel 檔案 -->
 		<dependency>
 			<groupId>org.jxls</groupId>
 			<artifactId>jxls-poi</artifactId>
