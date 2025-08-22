@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -255,8 +257,14 @@ public class ExcelUtil {
 			cellValue = cell.getStringCellValue();
 			break;
 		case NUMERIC:
-			cellValue = String.valueOf(cell.getNumericCellValue());
-			break;
+		    if (DateUtil.isCellDateFormatted(cell)) {
+		        // 格式化日期
+		        Date date = cell.getDateCellValue();
+		        cellValue = new SimpleDateFormat("yyyy/MM/dd").format(date);
+		    } else {
+		        cellValue = String.valueOf(cell.getNumericCellValue());
+		    }
+		    break;
 		case BOOLEAN:
 			cellValue = String.valueOf(cell.getBooleanCellValue());
 			break;
