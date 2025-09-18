@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.27" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.20.0.v202505111501</property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <parameters>
+        <scalar-parameter name="image" id="6">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <image id="4">
+            <method name="onRender"><![CDATA[// Image -> Script -> onRender
+if (params["image"] != null &amp;&amp; params["image"] != "") {
+    try {
+        var decoder = Packages.java.util.Base64.getDecoder();
+        var imgBytes = decoder.decode(params["image"]);
+        this.data = imgBytes;
+    } catch (e) {
+        Packages.java.lang.System.out.println("Image decode error: " + e);
+    }
+}]]></method>
+            <property name="source">expr</property>
+            <expression name="valueExpr">params["image"]</expression>
+        </image>
+    </body>
+</report>

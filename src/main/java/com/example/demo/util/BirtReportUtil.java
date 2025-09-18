@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class BirtReportUtil {
 	 * @param parameters  參數
 	 */
 	public static ByteArrayResource generatePdfReport(String filePath, String fileName, Map<String, Object> parameters,
-			Map<String, List<Map<String, Object>>> dataContext) {
+			Map<String, Object> dataContext) {
 		InputStream inputStream = getResourceInputStream(filePath, fileName);
 		return generatePdfReport(inputStream, parameters, dataContext);
 	}
@@ -74,7 +73,7 @@ public class BirtReportUtil {
 	 * @throws EngineException BIRT 報表引擎相關異常
 	 */
 	public static ByteArrayResource generatePdfReport(InputStream inputStream, Map<String, Object> params,
-			Map<String, List<Map<String, Object>>> dataContext) {
+			Map<String, Object> dataContext) {
 
 		try {
 			// 載入報表設計檔
