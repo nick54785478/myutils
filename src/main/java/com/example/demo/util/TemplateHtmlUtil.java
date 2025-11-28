@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -21,7 +20,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TemplateHtmlUtil {
 	private static final TemplateEngine templateEngine = new TemplateEngine();

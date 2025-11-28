@@ -28,7 +28,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
  * Excel 工具類
  */
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExcelUtil {
 
@@ -257,14 +255,14 @@ public class ExcelUtil {
 			cellValue = cell.getStringCellValue();
 			break;
 		case NUMERIC:
-		    if (DateUtil.isCellDateFormatted(cell)) {
-		        // 格式化日期
-		        Date date = cell.getDateCellValue();
-		        cellValue = new SimpleDateFormat("yyyy/MM/dd").format(date);
-		    } else {
-		        cellValue = String.valueOf(cell.getNumericCellValue());
-		    }
-		    break;
+			if (DateUtil.isCellDateFormatted(cell)) {
+				// 格式化日期
+				Date date = cell.getDateCellValue();
+				cellValue = new SimpleDateFormat("yyyy/MM/dd").format(date);
+			} else {
+				cellValue = String.valueOf(cell.getNumericCellValue());
+			}
+			break;
 		case BOOLEAN:
 			cellValue = String.valueOf(cell.getBooleanCellValue());
 			break;

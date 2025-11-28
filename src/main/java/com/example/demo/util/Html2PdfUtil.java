@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.springframework.stereotype.Component;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -25,7 +24,6 @@ import com.itextpdf.text.pdf.PdfReader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Html2PdfUtil {
 

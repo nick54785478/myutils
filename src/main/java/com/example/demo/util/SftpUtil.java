@@ -1,6 +1,5 @@
 package com.example.demo.util;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,7 +9,6 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -24,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SftpUtil {
 

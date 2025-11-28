@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
  * 客製驗證工具類
  */
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomerValidateUtil {
 

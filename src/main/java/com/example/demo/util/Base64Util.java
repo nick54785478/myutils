@@ -6,12 +6,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.springframework.stereotype.Component;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Base64Util {
 

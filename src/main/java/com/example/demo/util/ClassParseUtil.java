@@ -3,8 +3,6 @@ package com.example.demo.util;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 物件解析工具
- * */
+ */
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClassParseUtil {
 
@@ -37,7 +34,7 @@ public class ClassParseUtil {
 			return "";
 		}
 	}
-	
+
 	/**
 	 * 序列化物件 為 byte[]
 	 * 
@@ -52,7 +49,7 @@ public class ClassParseUtil {
 			return new byte[0];
 		}
 	}
-	
+
 	/**
 	 * 反序列化 JSON 回 物件
 	 * 
@@ -71,7 +68,7 @@ public class ClassParseUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 反序列化 JSON 回 物件
 	 * 

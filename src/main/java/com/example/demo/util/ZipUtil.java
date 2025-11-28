@@ -13,7 +13,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,6 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ZipUtil {
 

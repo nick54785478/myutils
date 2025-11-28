@@ -17,7 +17,6 @@ import org.jxls.common.Context;
 import org.jxls.transform.Transformer;
 import org.jxls.util.JxlsHelper;
 import org.jxls.util.TransformerFactory;
-import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
  * Jxls 工具類，透過模板 (Template) 輸出為 Excel 文件
  */
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JxlsUtil {
 

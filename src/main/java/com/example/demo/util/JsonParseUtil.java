@@ -3,7 +3,6 @@ package com.example.demo.util;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
  * Json Parse 工具類
  */
 @Slf4j
-@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonParseUtil {
 
