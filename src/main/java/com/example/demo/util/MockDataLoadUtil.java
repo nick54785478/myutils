@@ -6,6 +6,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 public class MockDataLoadUtil {
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	static {
+		// 支援 LocalDateTime、LocalDate、LocalTime
+		objectMapper.registerModule(new JavaTimeModule());
+		// 避免序列化成 timestamp
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+	}
 
 	/**
 	 * 讀取 JSON 成單一物件（適用單筆 JSON）
