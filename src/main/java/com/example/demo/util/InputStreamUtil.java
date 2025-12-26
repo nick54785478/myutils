@@ -20,12 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 工具類：提供 InputStream 與;
-import java.awt.image.Buffered
-
-rt lombok.NoArgsConstructor;
-
-import javax.imageio.ImageIO常用格式之間的轉換。
+ * 工具類：提供 InputStream 與 常用格式之間的轉換。
  * <p>
  * 功能涵蓋：
  * <ul>
