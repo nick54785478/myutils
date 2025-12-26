@@ -12,7 +12,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FileNameUtil {
+public class PathProcessUtil {
 
 	/**
 	 * 移除開頭的 prefix（第一段斜線前）
