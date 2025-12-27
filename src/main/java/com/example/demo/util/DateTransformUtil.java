@@ -19,9 +19,21 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateTransformUtil {
+	
+	/**
+	 * 將 LocalDateTime 轉換為 String
+	 */
+	public static String format(String pattern, LocalDateTime localDateTime) {
+		if (localDateTime == null) {
+			return null;
+		}
+
+		Date date = transformLocalDateTimeToDate(localDateTime);
+		return format(pattern, date);
+	}
 
 	/**
-	 * 將 LocalDate 轉為 字串
+	 * 將 LocalDate 轉為 String
 	 */
 	public static String transformLocalDateToString(LocalDate localDate) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -29,7 +41,7 @@ public class DateTransformUtil {
 	}
 
 	/**
-	 * 將 字串 轉為 LocalDate
+	 * 將 String 轉為 LocalDate
 	 */
 	public static LocalDate transformStringToLocalDate(String localDate) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
