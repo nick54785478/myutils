@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta 8D Notification</title>
+</head>
+
+<body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f4f4;">
+
+<!-- 外層 table 控制居中和背景色 -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4f4f4">
+    <tr>
+        <td align="center">
+
+            <!-- 內層固定寬度 table -->
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; border:1px solid #DDDDDD;">
+                <tr>
+                    <td style="padding:30px; line-height:1.6; color:#333333;">
+
+                        <!-- 收件人稱呼 -->
+                        <p style="margin:0 0 10px 0;">Dear ${recipientName},</p>
+
+                        <!-- 內容文字 -->
+                        <p style="margin:0 0 10px 0;">
+                            A new 8D form is for you to fill out. Please log in to the
+                            SQM 8D platform to complete the form.
+                        </p>
+
+                        <!-- 8D 表單號和連結 -->
+                        <p style="margin:0 0 20px 0;">
+                            8D Form Number:
+                            <a href="${url}" style="color:#0066CC; text-decoration:underline;">${formNo}</a>
+                        </p>
+
+                        <!-- 中文段落 -->
+                        <p style="margin:0 0 10px 0;">
+                            有個8D表單需要您填寫，懇請登錄至SQM 8D平台進行填單。
+                        </p>
+                        <p style="margin:0 0 20px 0;">
+                            8D表單單號:
+                            <a href="${url}" style="color:#0066CC; text-decoration:underline;">${formNo}</a>
+                        </p>
+
+                        <!-- 結尾 -->
+                        <p style="margin:0 0 10px 0;">Thanks.</p>
+                        <p style="margin:0;">From Delta SQM team</p>
+
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
