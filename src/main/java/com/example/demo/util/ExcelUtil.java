@@ -6,20 +6,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,38 +24,212 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.util.ReflectionUtils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Excel 工具類
- */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExcelUtil {
 
+	// ### 對外 API ###
+
 	/**
-	 * 匯入資料至工作表
-	 * 
-	 * @param sheetName  被建立的 Sheet Name
-	 * @param headerList 標題列資料
-	 * @param rowDataSet 資料內容 (列資料)
-	 * @return InputStreamResource 資料流
+	 * 讀取 Excel 並解析所有工作表。
+	 *
+	 * <p>
+	 * 核心流程： 1. 打開 Excel InputStream 建立 Workbook<br>
+	 * 2. 遍歷每個 Sheet，呼叫 {@link #parseSheet(Sheet)} 解析內容<br>
+	 * 3. 返回 Map，key 為 Sheet 名稱，value 為 List<Map<String, String>> 表示資料列
+	 * </p>
+	 *
+	 * @param inputStream Excel InputStream
+	 * @return Map<SheetName, List<RowData>>
+	 * @throws IOException 當讀取 Excel 發生錯誤時
+	 */
+	public static Map<String, List<Map<String, String>>> readExcelData(InputStream inputStream) throws IOException {
+
+		Map<String, List<Map<String, String>>> result = new HashMap<>();
+
+		try (Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+				Sheet sheet = workbook.getSheetAt(i);
+				String sheetName = sheet.getSheetName();
+				result.put(sheetName, parseSheet(sheet));
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 讀取指定 Sheet 的 Excel 資料。
+	 *
+	 * @param inputStream Excel InputStream
+	 * @param sheetName   指定的 Sheet 名稱
+	 * @return List<RowData>，若 Sheet 不存在則返回空 List
+	 * @throws IOException 當讀取 Excel 發生錯誤時
+	 */
+	public static List<Map<String, String>> readExcelData(InputStream inputStream, String sheetName)
+			throws IOException {
+
+		try (Workbook workbook = new XSSFWorkbook(inputStream)) {
+			Sheet sheet = workbook.getSheet(sheetName);
+			return sheet == null ? List.of() : parseSheet(sheet);
+		}
+	}
+
+	/**
+	 * 讀取指定多個 Sheet 的 Excel 資料。
+	 *
+	 * @param inputStream   Excel InputStream
+	 * @param sheetNameList 需要讀取的 Sheet 名稱列表
+	 * @return Map<SheetName, List<RowData>>
+	 * @throws IOException 當讀取 Excel 發生錯誤時
+	 */
+	public static Map<String, List<Map<String, String>>> readExcelData(InputStream inputStream,
+			List<String> sheetNameList) throws IOException {
+
+		Map<String, List<Map<String, String>>> result = new HashMap<>();
+
+		try (Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+			for (String sheetName : sheetNameList) {
+				Sheet sheet = workbook.getSheet(sheetName);
+				result.put(sheetName, sheet == null ? List.of() : parseSheet(sheet));
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 解析單一 Sheet。
+	 *
+	 * <p>
+	 * 流程： 1. 讀取第一列作為 Header<br>
+	 * 2. 從第二列開始讀取資料<br>
+	 * 3. 將每列資料轉成 Map<Header, Value><br>
+	 * 4. 空列過濾
+	 * </p>
+	 *
+	 * @param sheet Sheet 對象
+	 * @return List<RowData> 每列資料為 Map<String,String>
+	 */
+	private static List<Map<String, String>> parseSheet(Sheet sheet) {
+
+		List<Map<String, String>> data = new ArrayList<>();
+		if (sheet == null) {
+			return data;
+		}
+
+		Row headerRow = sheet.getRow(0);
+		if (headerRow == null) {
+			return data;
+		}
+
+		// 處理 Header 資料
+		List<String> headers = new ArrayList<>();
+		for (Cell cell : headerRow) {
+			headers.add(StringUtils.trim(parseCellValue(cell)));
+		}
+
+		// 處理 Rows 資料
+		for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+
+			Row row = sheet.getRow(r);
+			if (row == null) {
+				continue;
+			}
+
+			Map<String, String> rowData = new LinkedHashMap<>();
+			for (int c = 0; c < headers.size(); c++) {
+				Cell cell = row.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+				String value = StringUtils.trim(parseCellValue(cell));
+				rowData.put(headers.get(c), value);
+			}
+
+			// 過濾空列
+			if (isRowEmpty(rowData)) {
+				continue;
+			}
+
+			data.add(rowData);
+		}
+
+		return data;
+	}
+
+	/**
+	 * 判斷一列是否為空（核心防禦）。
+	 *
+	 * @param rowData Map<Header, Value>
+	 * @return true 若所有值皆為空白
+	 */
+	private static boolean isRowEmpty(Map<String, String> rowData) {
+		return rowData.values().stream().allMatch(StringUtils::isBlank);
+	}
+
+	/**
+	 * 解析 Cell 值。
+	 *
+	 * <p>
+	 * 支援型態：
+	 * <ul>
+	 * <li>STRING</li>
+	 * <li>NUMERIC</li>
+	 * <li>BOOLEAN</li>
+	 * <li>FORMULA (優先解析數值，失敗則解析字串)</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * @param cell Excel Cell
+	 * @return 字串型態的 Cell 值，空 Cell 回傳 ""
+	 */
+	private static String parseCellValue(Cell cell) {
+
+		if (cell == null) {
+			return "";
+		}
+
+		return switch (cell.getCellType()) {
+		case STRING -> cell.getStringCellValue();
+		case NUMERIC -> String.valueOf(cell.getNumericCellValue());
+		case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+		case FORMULA -> {
+			try {
+				yield String.valueOf(cell.getNumericCellValue());
+			} catch (Exception e) {
+				yield cell.getStringCellValue();
+			}
+		}
+		default -> "";
+		};
+	}
+
+	// ### Export Excel ###
+
+	/**
+	 * 將資料導出為 InputStreamResource，方便 Spring ResponseEntity 使用。
+	 *
+	 * @param sheetName  Sheet 名稱
+	 * @param headerList 表頭 List
+	 * @param rowDataSet 資料列集合 (物件型態)
+	 * @return InputStreamResource
 	 */
 	public static InputStreamResource exportDataAsResource(String sheetName, List<String> headerList,
-			List<? extends Object> rowDataSet) {
-		// 處理標題及內容資料
+			List<?> rowDataSet) {
+
 		XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
 
-		// 建立 Resource 往前端送
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			book.write(bos);
 			byte[] bookByteArray = bos.toByteArray();
-			ByteArrayInputStream bis = new ByteArrayInputStream(bookByteArray);
 			book.close();
-			return new InputStreamResource(bis);
+			return new InputStreamResource(new ByteArrayInputStream(bookByteArray));
 		} catch (IOException e) {
 			log.error("轉換錯誤，產生報表失敗 ", e);
 			return null;
@@ -67,270 +237,135 @@ public class ExcelUtil {
 	}
 
 	/**
-	 * 匯出資料為資料流 byte[]
-	 * 
-	 * @param sheetName  被建立的 Sheet Name
-	 * @param headerList 標題列資料
-	 * @param rowDataSet 資料內容 (列資料)
-	 * @return InputStreamResource
+	 * 將資料導出為 byte[]。
+	 *
+	 * @param sheetName  Sheet 名稱
+	 * @param headerList 表頭 List
+	 * @param rowDataSet 資料列集合
+	 * @return byte[]
 	 */
-	public static byte[] exportDataAsByteArray(String sheetName, List<String> headerList,
-			List<? extends Object> rowDataSet) {
-		// 處理標題及內容資料
+	public static byte[] exportDataAsByteArray(String sheetName, List<String> headerList, List<?> rowDataSet) {
+
 		XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
+
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			book.write(bos);
 			book.close();
 			return bos.toByteArray();
 		} catch (IOException e) {
 			log.error("轉換錯誤，產生報表失敗", e);
-			return null;
+			return new byte[0];
 		}
 	}
 
 	/**
-	 * 建立 Excel 表單資料
-	 * 
-	 * @param sheetName  被建立的 Sheet Name
-	 * @param headerList 標題列資料
-	 * @param rowDataSet 資料內容 (列資料)
-	 * @return XSSFWorkbook 表單資料
+	 * 建立 Workbook。
+	 *
+	 * @param sheetName  Sheet 名稱
+	 * @param headerList 表頭
+	 * @param rowDataSet 物件型態資料列
+	 * @return XSSFWorkbook
 	 */
-	public static XSSFWorkbook processWorkbook(String sheetName, List<String> headerList,
-			List<? extends Object> rowDataSet) {
-		// 新建工作簿
+	public static XSSFWorkbook processWorkbook(String sheetName, List<String> headerList, List<?> rowDataSet) {
+
 		XSSFWorkbook book = new XSSFWorkbook();
-		// 建立工作表
 		XSSFSheet sheet = book.createSheet(sheetName);
-		// 轉換 Header List
+
 		Object[] headers = headerList.toArray();
-		// 資料轉換
 		List<Object[]> dataset = new ArrayList<>();
-		rowDataSet.stream().forEach(e -> {
-			dataset.add(convertObjectToArray(e));
-		});
-		// 匯入資料至工作表
+		rowDataSet.forEach(e -> dataset.add(convertObjectToArray(e)));
+
 		importData(sheet, headers, dataset);
+
 		return book;
 	}
 
 	/**
-	 * 匯入資料
-	 * 
-	 * @param sheet      表單資料
-	 * @param header     標題資料
-	 * @param rowDataSet 單元格資料列表 (列資料)
+	 * 匯入資料到 Sheet。
+	 *
+	 * @param sheet      Sheet
+	 * @param header     表頭 Object[]
+	 * @param rowDataSet List<Object[]> 資料列
 	 */
 	public static void importData(XSSFSheet sheet, Object[] header, List<Object[]> rowDataSet) {
+
 		int rowIdx = -1;
 
-		if (!Objects.isNull(header)) {
-			// 新增第一筆
-			rowDataSet.add(0, header);
+		if (header != null) {
+			rowDataSet.add(0, header); // header 放到第一列
 		} else {
 			rowIdx = 0;
 		}
 
 		for (Object[] arrs : rowDataSet) {
-			// 建立列
+
 			XSSFRow row = sheet.createRow(++rowIdx);
 
 			int colIdx = -1;
 			for (Object field : arrs) {
-				// 建立單元格
+
 				XSSFCell cell = row.createCell(++colIdx);
-				// 單元格寫入內容
-				if (field instanceof String) {
+
+				switch (field.getClass().getSimpleName()) {
+				case "String":
 					cell.setCellValue((String) field);
-				} else if (field instanceof Integer) {
+					break;
+				case "Integer":
 					cell.setCellValue((Integer) field);
-				} else if (field instanceof Long) {
+					break;
+				case "Long":
 					cell.setCellValue((Long) field);
-				} else if (field instanceof Double) {
+					break;
+				case "Double":
 					cell.setCellValue((Double) field);
-				} else if (field instanceof Date) {
-					String d = DateFormatUtils.format((Date) field, "yyyy/MM/dd");
-					cell.setCellValue(d);
-				} else if (field instanceof BigDecimal) {
-					BigDecimal bd = (BigDecimal) field;
-					double d = bd.doubleValue();
-					cell.setCellValue(d);
-				} else {
+					break;
+				case "Date":
+					cell.setCellValue(DateFormatUtils.format((Date) field, "yyyy/MM/dd"));
+					break;
+				case "BigDecimal":
+					cell.setCellValue(((BigDecimal) field).doubleValue());
+					break;
+				default:
 					cell.setCellValue("");
 				}
+
+//				switch (field) {
+//				case String str -> cell.setCellValue(str);
+//				case Integer i -> cell.setCellValue(i);
+//				case Long l -> cell.setCellValue(l);
+//				case Double d -> cell.setCellValue(d);
+//				case Date date -> cell.setCellValue(DateFormatUtils.format(date, "yyyy/MM/dd"));
+//				case BigDecimal bd -> cell.setCellValue(bd.doubleValue());
+//				default -> cell.setCellValue("");
+//				}
 			}
 		}
 	}
 
 	/**
-	 * 讀取 Excel 單一 sheet 資料
-	 * 
-	 * @param inputStream 資料流
-	 * @param sheetName   工作表名稱
-	 * @return List<map<String, String>>: List<map<標題, 值>> 一個 Map 是一列資料
-	 * @throws IOException
-	 */
-	public static List<Map<String, String>> readExcelData(InputStream inputStream, String sheetName)
-			throws IOException {
-		List<Map<String, String>> result = new ArrayList<>();
-		Workbook workbook = new XSSFWorkbook(inputStream);
-		processWorkbook(workbook, sheetName, result);
-		workbook.close(); // 關閉工作簿以釋放資源
-		return result;
-	}
-
-	/**
-	 * 讀取多張表資料，並輸出 Map<sheetName, List<Header, Cell>>
-	 * 
-	 * @param inputStream 資料流
-	 * @return Map<SheetName, List<Map<Header, Cell>>>
-	 * @throws IOException
-	 */
-	public static Map<String, List<Map<String, String>>> readExcelData(InputStream inputStream,
-			List<String> sheetNameList) throws IOException {
-		Map<String, List<Map<String, String>>> result = new HashMap<>();
-		// 將 InputStream 轉為 Workbook 資料
-		Workbook workbook = new XSSFWorkbook(inputStream);
-		sheetNameList.stream().forEach(sheetName -> {
-			List<Map<String, String>> list = new ArrayList<>();
-			processWorkbook(workbook, sheetName, list);
-			result.put(sheetName, list);
-		});
-		return result;
-	}
-
-	/**
-	 * 讀取 Excel 資料
-	 * 
-	 * @param inputStream : 資料流
-	 * @return Map<String, List<Map<String, String>>>
-	 */
-	public static Map<String, List<Map<String, String>>> readExcelData(InputStream inputStream) throws IOException {
-		Map<String, List<Map<String, String>>> result = new HashMap<>();
-		Workbook workbook = new XSSFWorkbook(inputStream);
-		// 讀取所有 Sheet
-		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-			Sheet sheet = workbook.getSheetAt(i);
-			String sheetName = sheet.getSheetName();
-			List<Map<String, String>> sheetData = new ArrayList<>();
-			List<String> headers = new ArrayList<>();
-
-			// 取得 Header (第一列)
-			Row headerRow = sheet.getRow(0);
-			if (headerRow != null) {
-				for (Cell cell : headerRow) {
-					headers.add(cell.getStringCellValue().trim());
-				}
-			}
-
-			// 讀取資料 (從第二列開始)
-			for (int r = 1; r <= sheet.getLastRowNum(); r++) {
-				Row row = sheet.getRow(r);
-				if (row == null)
-					continue;
-
-				Map<String, String> rowData = new LinkedHashMap<>();
-				for (int c = 0; c < headers.size(); c++) {
-					Cell cell = row.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-					rowData.put(headers.get(c), parseCellValue(cell));
-				}
-				sheetData.add(rowData);
-			}
-			result.put(sheetName, sheetData);
-		}
-		workbook.close();
-		return result;
-	}
-
-	/**
-	 * 轉換單元格內的值
-	 * 
-	 * @param cell 單元格
-	 * @return 字串
-	 */
-	private static String parseCellValue(Cell cell) {
-		String cellValue = "";
-		switch (cell.getCellType()) {
-		case STRING:
-			cellValue = cell.getStringCellValue();
-			break;
-		case NUMERIC:
-			if (DateUtil.isCellDateFormatted(cell)) {
-				// 格式化日期
-				Date date = cell.getDateCellValue();
-				cellValue = new SimpleDateFormat("yyyy/MM/dd").format(date);
-			} else {
-				cellValue = String.valueOf(cell.getNumericCellValue());
-			}
-			break;
-		case BOOLEAN:
-			cellValue = String.valueOf(cell.getBooleanCellValue());
-			break;
-		case BLANK:
-			break;
-		default:
-			break;
-		}
-
-		return cellValue;
-	}
-
-	/**
-	 * 動態轉換物件為 Object[]
-	 * 
-	 * @param obj
-	 * @return Object[]
+	 * 將物件轉換為 Object[]，方便匯出 Excel。
+	 *
+	 * <p>
+	 * 使用 Reflection 讀取物件所有欄位，並支援 private 欄位。
+	 * </p>
+	 *
+	 * @param obj 任意物件
+	 * @return Object[] 欄位值陣列
 	 */
 	private static Object[] convertObjectToArray(Object obj) {
-		Class<?> clazz = obj.getClass();
-		Field[] fields = clazz.getDeclaredFields();
+
+		Field[] fields = obj.getClass().getDeclaredFields();
 		Object[] objectArray = new Object[fields.length];
 
 		try {
 			for (int i = 0; i < fields.length; i++) {
-				fields[i].setAccessible(true);
+				ReflectionUtils.makeAccessible(fields[i]);
 				objectArray[i] = fields[i].get(obj);
 			}
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			log.error("物件轉換發生非預期的錯誤");
 		}
 
 		return objectArray;
 	}
-
-	/**
-	 * 處理 多個 sheet 並將其加入輸出資料集
-	 * 
-	 * @param workbook  Workbook
-	 * @param sheetName 表名
-	 * @param dataSet   List<Map<標題, 內容>>
-	 */
-	private static void processWorkbook(Workbook workbook, String sheetName, List<Map<String, String>> dataSet) {
-		Sheet sheet = workbook.getSheet(sheetName);
-		// 獲取第一列（標題列）
-		Row titleRow = sheet.getRow(0);
-		// 迭代列 (從第 2 列開始)
-		for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-			Map<String, String> map = new HashMap<>();
-			// 資料列
-			Row row = sheet.getRow(rowIndex);
-			if (row == null) {
-				break;
-			}
-			// 遍歷標題列的每一個單元格
-			Iterator<Cell> titleCellIterator = titleRow.cellIterator();
-			int cellIndex = 0;
-			while (titleCellIterator.hasNext()) {
-				String key = StringUtils.trim(parseCellValue(titleCellIterator.next()));
-				String value = parseCellValue(row.getCell(cellIndex));
-				if (StringUtils.isNotBlank(key)) {
-					map.put(key, value);
-				}
-				cellIndex++;
-			}
-			log.info("map: {}", map);
-			dataSet.add(map);
-		}
-	}
-
 }
