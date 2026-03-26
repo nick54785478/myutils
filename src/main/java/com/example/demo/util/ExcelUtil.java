@@ -220,20 +220,18 @@ public class ExcelUtil {
 	 * @param rowDataSet 資料列集合 (物件型態)
 	 * @return InputStreamResource
 	 */
-	public static InputStreamResource exportDataAsResource(String sheetName, List<String> headerList,
-			List<?> rowDataSet) {
+	public static InputStreamResource exportDataAsResource(String sheetName, List<String> headerList, List<?> rowDataSet) {
 
-		XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
+	    try (XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
+	         ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			book.write(bos);
-			byte[] bookByteArray = bos.toByteArray();
-			book.close();
-			return new InputStreamResource(new ByteArrayInputStream(bookByteArray));
-		} catch (IOException e) {
-			log.error("轉換錯誤，產生報表失敗 ", e);
-			return null;
-		}
+	        book.write(bos);
+	        return new InputStreamResource(new ByteArrayInputStream(bos.toByteArray()));
+
+	    } catch (IOException e) {
+	        log.error("轉換錯誤，產生報表失敗", e);
+	        return null;
+	    }
 	}
 
 	/**
@@ -246,16 +244,16 @@ public class ExcelUtil {
 	 */
 	public static byte[] exportDataAsByteArray(String sheetName, List<String> headerList, List<?> rowDataSet) {
 
-		XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
+	    try (XSSFWorkbook book = processWorkbook(sheetName, headerList, rowDataSet);
+	         ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			book.write(bos);
-			book.close();
-			return bos.toByteArray();
-		} catch (IOException e) {
-			log.error("轉換錯誤，產生報表失敗", e);
-			return new byte[0];
-		}
+	        book.write(bos);
+	        return bos.toByteArray();
+
+	    } catch (IOException e) {
+	        log.error("轉換錯誤，產生報表失敗", e);
+	        return new byte[0];
+	    }
 	}
 
 	/**
